@@ -27,7 +27,7 @@
     <ClCompile Include="Tasks.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ImportantStuff.cpp">
+    <ClCompile Include="Benсhmark.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +38,10 @@
     <ClInclude Include="Timer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ImportantStuff.h">
+    <ClInclude Include="Tasks.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Tasks.h">
+    <ClInclude Include="Benсhmark.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
