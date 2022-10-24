@@ -35,7 +35,11 @@ public:
 	}
 
 	void CalculateAvTime();
+
+	//numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
 	void Test(int expCount, int M, int N, int K, int numbFunc, int block, char sizeS = 'N');
+
+	//numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
 	void Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block, char sizeS = 'N');
 	Matrix WorkFuncTime(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x = 1, char typeSecond = '.', char name = '.');
 

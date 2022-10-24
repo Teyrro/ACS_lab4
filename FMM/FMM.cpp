@@ -9,7 +9,8 @@ void main() {
 	std::cin >> M >> N >> K;
 	Benсhmark unit;
 	Timer timer;
-	Task7_Block(M, N, K, 'N');
+	Test
+	//Task7_Block(M, N, K, 'N');
 
 
 	//Task3();

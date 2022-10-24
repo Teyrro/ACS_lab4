@@ -1,6 +1,24 @@
 #include "Benñhmark.h"
 #include <cmath>
 
+
+void Task2(int blockS, int expCount) {
+	int i(blockS), j(0);
+	std::vector<std::pair<int, double>> BSizeAvTime(expCount);
+	Timer timer;
+	Benñhmark unit;
+	while (expCount > j) {
+		unit.Test(10, i, i, i, 0, 1, 'N');
+		//std::cout << c << d << f;
+		std::cout << "size: " << i*i << "\n";
+		std::cout << "--------------------------------------------\n\n";
+		BSizeAvTime[j].first = i;
+		BSizeAvTime[j].second = unit.avTime;
+		i += blockS;
+		j++;
+	}
+}
+
 void Task3() {
 	int i(100);
 	Timer timer;

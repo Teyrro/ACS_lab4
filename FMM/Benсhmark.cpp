@@ -6,6 +6,7 @@ void Benñhmark::CalculateAvTime() {
 	avTime /= expCount;
 }
 
+//numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
 void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block = 1, char sizeS) {
 	std::function<Matrix(Matrix, Matrix, int)> Func;
 	Timer timer(sizeS);
@@ -36,6 +37,7 @@ void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFun
 	std::cout << "AvTime: " << avTime << "\n";
 }
 
+//numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
 void Benñhmark::Test(int expCount, int M, int N, int K, int numbFunc, int block = 1, char sizeS) {
 	std::function<Matrix(Matrix, Matrix, int)> Func;
 	using std::placeholders::_1;
