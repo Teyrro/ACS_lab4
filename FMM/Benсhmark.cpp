@@ -6,41 +6,63 @@ void Benñhmark::CalculateAvTime() {
 	avTime /= expCount;
 }
 
+void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block = 1, char sizeS) {
+	std::function<Matrix(Matrix, Matrix, int)> Func;
+	Timer timer(sizeS);
 
-Matrix Benñhmark::WorkFuncTime(Matrix const& a, Matrix const& b, Func1 func, Timer& timer, char typeSecond, char name) {
-	switch (name) {
-	case 'O': {
-		std::cout << "Ordinary Multiply Matrix: " << "\n";
+	switch (numbFunc) {
+	case 0: {
+		Func = Matrix::DGEMM_BLAS;
 		break;
 	}
-	case 'M': {
-		std::cout << "Modified Multiply Matrix: " << "\n";
+	case 1: {
+		Func = Matrix::DGEMM_BLAS_1;
 		break;
 	}
-	case 'B': {
-		std::cout << "Block Modified Multiply Matrix: " << "\n";
+	case 2: {
+		Func = Matrix::DGEMM_BLAS_2;
 		break;
 	}
 	}
 
-	timer.start();
-	Matrix c = func(a, b);
-	timer.stop();
-	switch (typeSecond) {
-	case 'S': {
-		std::cout << "Elapsed Seconds: " << timer.elapsedSeconds() << "\n\n";
+
+	for (int i(0); i < expCount; i++) {
+		WorkFuncTime(a, b, Func, timer, block);
+		time[i] = timer.Func1();
+		avTime += time[i];
+	}
+	avTime /= expCount;
+
+	std::cout << "AvTime: " << avTime << "\n";
+}
+
+void Benñhmark::Test(int expCount, int M, int N, int K, int numbFunc, int block = 1, char sizeS) {
+	std::function<Matrix(Matrix, Matrix, int)> Func;
+	using std::placeholders::_1;
+	Timer timer(sizeS);
+
+	switch (numbFunc) {
+	case 0: {
+		Func = Matrix::DGEMM_BLAS;
 		break;
 	}
-	case 'M': {
-		std::cout << "Elapsed MilliSeconds: " << timer.elapsedMilliseconds() << "\n\n";
+	case 1: {
+		Func = Matrix::DGEMM_BLAS_1;
 		break;
 	}
-	case 'N': {
-		std::cout << "Elapsed NanoSeconds: " << timer.elapsedNanoseconds() << "\n\n";
+	case 2: {
+		Func = Matrix::DGEMM_BLAS_2;
 		break;
 	}
 	}
-	return c;
+
+	Matrix a(M, N), b(N, K);
+	for (int i(0); i < expCount; i++) {
+		WorkFuncTime(a, b, Func, timer, block);
+		time[i] = timer.Func1();
+		avTime += time[i];
+	}
+	avTime /= expCount;
 }
 
 Matrix Benñhmark::WorkFuncTime(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x, char typeSecond, char name) {

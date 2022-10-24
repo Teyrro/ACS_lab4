@@ -1,18 +1,6 @@
 #include "Benñhmark.h"
 #include <cmath>
 
-void Test(int expCount, int blockSize) {
-	Benñhmark unit(expCount, 'K', blockSize);
-	Timer timer;
-	Matrix a(blockSize, blockSize), b(blockSize, blockSize);
-	for (int i(0); i < expCount; i++) {
-		unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_2, timer, 2);
-		unit.time[i] = timer.elapsedNanoseconds();
-		unit.avTime += timer.elapsedNanoseconds();;
-	}
-	unit.avTime /= expCount;
-}
-
 void Task3() {
 	int i(100);
 	Timer timer;
@@ -21,8 +9,6 @@ void Task3() {
 		int sizeB(i);
 		int rowA(2 * i), columnA(sizeB);
 		Matrix a(rowA, columnA), b(sizeB, sizeB);
-		FillM(a);
-		FillM(b);
 		//std::cout << a << b;
 		Matrix c = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS, timer, 'M', 'O');
 		Matrix d = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_1, timer, 'M', 'M');
@@ -34,29 +20,29 @@ void Task3() {
 	}
 }
 
-void Task7_Block() {
-	int i(15), block(2);
-	Benñhmark unit;
-	double  prevElapsedT;
+void Task7_Block(int M, int N, int K, char sizeS) {
+	Matrix a(M, N), b(N, K);
+	int size(a.str * b.column), betterValue(1), block(2), expCount(1000);
+	Benñhmark unit(expCount, 'K', M*K);
 	Timer timer;
-	do  {
-		int sizeB(i);
-		int rowA(2 * i), columnA(sizeB);
-		Matrix a(rowA, columnA), b(sizeB, sizeB);
-		FillM(a);
-		FillM(b);
-		Matrix f = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_2, timer, block, 'N', 'B');
-		std::cout << f;
+
+	double  prevElapsedT;
+	unit.Test(1000, a, b, 2, block);
+	prevElapsedT = unit.avTime;
+
+	while (size / block != 0) {
 		std::cout << "Block: " << block << "\n";
-		std::cout << "size: " << i << "\n\n";
-		block++;
-		prevElapsedT = timer.elapsedNanoseconds();
-		f = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_2, timer, block, 'N', 'B');
-		std::cout << f;
-		std::cout << "Block: " << block << "\n";
-		std::cout << "size: " << i << "\n";
-		std::cout << "(" << timer.elapsedNanoseconds() << " - " << prevElapsedT << ") = " << abs(timer.elapsedNanoseconds() - prevElapsedT) << " <= 0\n";
+		//std::cout << "size: " << i << "\n\n";
+		//std::cout << "i = " << i << "\n";
+		unit.Test(expCount, a, b, 2, block, sizeS);
+
+		if (prevElapsedT > unit.avTime) {
+			betterValue = block;
+			prevElapsedT = unit.avTime;
+		}
 		std::cout << "--------------------------------------------\n\n";
-		block++;
-	} while (abs(timer.elapsedNanoseconds() - prevElapsedT) >= 0);
+		block *= 2;
+	}
+
+	std::cout << "Better block size: " << betterValue;
 }

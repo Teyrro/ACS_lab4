@@ -3,7 +3,6 @@
 #include <string>
 #include "Matrix.h"
 #include "Timer.h"
-using Func1 = std::function<Matrix(Matrix, Matrix)>;
 using Func2 = std::function<Matrix(Matrix, Matrix, int)>;
 
 class Benñhmark
@@ -36,9 +35,9 @@ public:
 	}
 
 	void CalculateAvTime();
-
-	Matrix WorkFuncTime(Matrix const& a, Matrix const& b, Func1 func, Timer& timer, char typeSecond = '.', char name = '.');
-	Matrix WorkFuncTime(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x, char typeSecond = '.', char name = '.');
+	void Test(int expCount, int M, int N, int K, int numbFunc, int block, char sizeS = 'N');
+	void Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block, char sizeS = 'N');
+	Matrix WorkFuncTime(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x = 1, char typeSecond = '.', char name = '.');
 
 };
 
