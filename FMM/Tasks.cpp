@@ -1,65 +1,114 @@
 #include "Benñhmark.h"
 #include <cmath>
-
+#include <fstream>
+#include <list>
 
 void Task2(int blockS, int expCount) {
 	int i(blockS), j(0);
 	std::vector<std::pair<int, double>> BSizeAvTime(expCount);
-	Timer timer;
-	Benñhmark unit;
+
+	Benñhmark unit(1, 'K', blockS);
 	while (expCount > j) {
-		unit.Test(10, i, i, i, 0, 1, 'N');
+		unit.Test(1, i, i, i, 0, 1, 'S');
 		//std::cout << c << d << f;
-		std::cout << "size: " << i*i << "\n";
-		std::cout << "--------------------------------------------\n\n";
 		BSizeAvTime[j].first = i;
-		BSizeAvTime[j].second = unit.avTime;
+		BSizeAvTime[j].second = unit.time[0];
+
+		std::cout << "size: " << i  << " * " << i << " Time: " << unit.time[0] << '\n';
+		std::cout << "--------------------------------------------\n\n";
 		i += blockS;
 		j++;
 	}
+	std::string filename("Test.csv");
+	std::ofstream file(filename, std::ios::trunc);
+	file << "size;";
+	for (int i(0); i < BSizeAvTime.size(); i++) {
+		file << BSizeAvTime[i].first << ";";
+	}
+
+	file << "\nTime (Second);";
+	for (int i(0); i < BSizeAvTime.size(); i++) {
+		file << BSizeAvTime[i].second << ";\n";
+	}
+
 }
 
 void Task3() {
-	int i(100);
-	Timer timer;
+	int i(100), step(10), tmp;
 	Benñhmark unit;
-	while (true) {
-		int sizeB(i);
-		int rowA(2 * i), columnA(sizeB);
-		Matrix a(rowA, columnA), b(sizeB, sizeB);
-		//std::cout << a << b;
-		Matrix c = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS, timer, 'M', 'O');
-		Matrix d = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_1, timer, 'M', 'M');
-		Matrix f = unit.WorkFuncTime(a, b, Matrix::DGEMM_BLAS_2, timer, 2, 'M', 'B');
-		//std::cout << c << d << f;
+	Matrix a, b, c;
+	double eps(pow(10, -5));
+	double sizeMatr(((sizeof(Matrix) + sizeof(double) * i * i) * 3)), sizeRAM(6 * pow(1024, 3) * 0.5);
+	double mb = pow(1024, 2);
+	double dif((sizeRAM - sizeMatr) / mb);
+	while (dif > 10) {
+
+		std::cout << "Size Matrix(mb): " << sizeMatr / mb  << " <= size RAM (mb): " << sizeRAM / mb << "\n";
+		dif = (sizeRAM - sizeMatr) / mb;
+		std::cout << "dif: " << dif << "\n";
 		std::cout << "size: " << i << "\n";
 		std::cout << "--------------------------------------------\n\n";
-		i *= 10;
+
+		if (dif < 5) {
+			a.resize(i, i), b.resize(i, i), c.resize(i, i);
+			FillM(a), FillM(b), FillM(c);
+			std::cin >> tmp;
+		}
+
+		i += step;
+		sizeMatr = ((sizeof(Matrix) + sizeof(double) * i * i) * 3);
 	}
 }
 
-void Task7_Block(int M, int N, int K, char sizeS) {
+void multy(std::list<int>& mas, int size) {
+	int mult(2);
+	while (size / mult != 0) {
+		if (size % mult == 0) {
+			size /= mult;
+			mas.push_back(mult);
+		}
+		else {
+			mult++;
+		}
+		
+	}
+}
+
+void Task7_Block(int M, int N, int K, char sizeS, int expC) {
 	Matrix a(M, N), b(N, K);
-	int size(a.str * b.column), betterValue(1), block(2), expCount(1000);
+	std::list<int> multy1;
+	multy(multy1, M);
+
+	int size(b.column), betterValue(1), block(1), expCount(expC);
 	Benñhmark unit(expCount, 'K', M*K);
-	Timer timer;
 
-	double  prevElapsedT;
-	unit.Test(1000, a, b, 2, block);
+	double  prevElapsedT, acceleration;
+	unit.Test(expCount, a, b, 0, block);
+	double simpleMult = unit.avTime;
+	unit.avTime = 0;
+
+	unit.Test(expCount, a, b, 2, block);
+	acceleration = simpleMult / unit.avTime;
 	prevElapsedT = unit.avTime;
+	unit.avTime = 0;
 
-	while (size / block != 0) {
+	int i(0);
+	while (multy1.empty() != true) {
+		block *= multy1.front();
+		multy1.pop_front();
+		unit.avTime = 0;
+		unit.Test(expCount, a, b, 2, block);
+		double accel2(simpleMult / unit.avTime);
+		
 		std::cout << "Block: " << block << "\n";
-		//std::cout << "size: " << i << "\n\n";
+		std::cout << "Acceleation: " << accel2 << "\n\n";
 		//std::cout << "i = " << i << "\n";
-		unit.Test(expCount, a, b, 2, block, sizeS);
-
-		if (prevElapsedT > unit.avTime) {
+		if (accel2 > acceleration) {
 			betterValue = block;
 			prevElapsedT = unit.avTime;
+			acceleration = accel2;
 		}
 		std::cout << "--------------------------------------------\n\n";
-		block *= 2;
 	}
 
 	std::cout << "Better block size: " << betterValue;

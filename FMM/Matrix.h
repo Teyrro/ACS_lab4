@@ -16,10 +16,20 @@ public:
 			FillM(this);
 	}
 
+	Matrix(int&& str, int&& column, std::vector<double>&& m) 
+		: str(std::move(str)), column(std::move(column)), massive(std::move(m)) {}
+
+	Matrix(Matrix&& a) noexcept
+		: str(std::move(a.str)), column(std::move(a.column)), massive(std::move(a.massive)) {}
+
+	Matrix() {
+
+	}
+
 	void resize(int str = 0, int column = 0);
-	static Matrix DGEMM_BLAS(const Matrix a, Matrix b, int BS = 0);
-	static Matrix DGEMM_BLAS_1(const Matrix a, const Matrix b, int BS = 0);
-	static Matrix DGEMM_BLAS_2(const Matrix a, const Matrix b, int BS);
+	static Matrix DGEMM_BLAS(Matrix const& a, Matrix const& b, const int bSize);
+	static Matrix DGEMM_BLAS_1(Matrix const& a, Matrix const& b, const int bSize);
+	static Matrix DGEMM_BLAS_2(Matrix const& a, Matrix const& b, const int bSize);
 	friend void FillM(Matrix* a);
 	double operator[] (int index) {
 		return massive[index];

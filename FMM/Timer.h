@@ -11,7 +11,6 @@ class Timer
 public:
     std::function<double()> Func1;
     Timer(char name = 'N') {
-		using std::placeholders::_1; 
 		switch (name) {
 		case 'S': {
 			Func1 = std::bind(&Timer::elapsedSeconds, this);

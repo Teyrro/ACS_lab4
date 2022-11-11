@@ -7,8 +7,8 @@ void Benñhmark::CalculateAvTime() {
 }
 
 //numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
-void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block = 1, char sizeS) {
-	std::function<Matrix(Matrix, Matrix, int)> Func;
+void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFunc, int block = 1, char sizeS, char name) {
+	Func2 Func;
 	Timer timer(sizeS);
 
 	switch (numbFunc) {
@@ -28,7 +28,7 @@ void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFun
 
 
 	for (int i(0); i < expCount; i++) {
-		WorkFuncTime(a, b, Func, timer, block);
+		WorkFuncTime1(a, b, Func, timer, block);
 		time[i] = timer.Func1();
 		avTime += time[i];
 	}
@@ -38,9 +38,8 @@ void Benñhmark::Test(int expCount, Matrix const& a, Matrix const& b, int numbFun
 }
 
 //numbFunc 0 - DGEMM_BLAS, 1 - DGEMM_BLAS_1, 2 - DGEMM_BLAS_2
-void Benñhmark::Test(int expCount, int M, int N, int K, int numbFunc, int block = 1, char sizeS) {
-	std::function<Matrix(Matrix, Matrix, int)> Func;
-	using std::placeholders::_1;
+void Benñhmark::Test(int expCount, int M, int N, int K, int numbFunc, int block, char sizeS) {
+	Func2 Func;
 	Timer timer(sizeS);
 
 	switch (numbFunc) {
@@ -59,12 +58,51 @@ void Benñhmark::Test(int expCount, int M, int N, int K, int numbFunc, int block 
 	}
 
 	Matrix a(M, N), b(N, K);
+	
+	//std::cout << "Mb: " << ((sizeof(double) * M * N + sizeof(Matrix)) * 3) / pow(1024, 2) << " ";
 	for (int i(0); i < expCount; i++) {
-		WorkFuncTime(a, b, Func, timer, block);
+		WorkFuncTime1(a, b, Func, timer, block);
 		time[i] = timer.Func1();
 		avTime += time[i];
 	}
 	avTime /= expCount;
+	std::cout << "AvTime: " << avTime << "\n";
+
+}
+
+void Benñhmark::WorkFuncTime1(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x, char typeSecond, char name) {
+	switch (name) {
+	case 'O': {
+		std::cout << "Ordinary Multiply Matrix: " << "\n";
+		break;
+	}
+	case 'M': {
+		std::cout << "Modified Multiply Matrix: " << "\n";
+		break;
+	}
+	case 'B': {
+		std::cout << "Block Modified Multiply Matrix: " << "\n";
+		break;
+	}
+	}
+
+	timer.start();
+	Matrix c(func(a, b, x));
+	timer.stop();
+	switch (typeSecond) {
+	case 'S': {
+		std::cout << "Elapsed Seconds: " << timer.elapsedSeconds() << "\n\n";
+		break;
+	}
+	case 'M': {
+		std::cout << "Elapsed MilliSeconds: " << timer.elapsedMilliseconds() << "\n\n";
+		break;
+	}
+	case 'N': {
+		std::cout << "Elapsed NanoSeconds: " << timer.elapsedNanoseconds() << "\n\n";
+		break;
+	}
+	}
 }
 
 Matrix Benñhmark::WorkFuncTime(Matrix const& a, Matrix const& b, Func2 func, Timer& timer, int x, char typeSecond, char name) {
