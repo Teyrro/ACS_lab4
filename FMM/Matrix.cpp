@@ -46,7 +46,7 @@ Matrix Matrix::DGEMM_BLAS(Matrix const& a, Matrix const& b, const int bSize) {
 		int row(i * a.column);
 		for (int j(0); j < b.column; j++) {	
 			int j0(i * b.column + j);
-			for (int k = 0; k < a.column; ++k)
++			for (int k = 0; k < a.column; ++k)
 				c.massive[j0] += a.massive[row + k] * b.massive[k * b.column + j];
 				//C[i * N + j] += A[i * K + k] * B[k * N + j];
 		}

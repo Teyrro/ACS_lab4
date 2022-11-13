@@ -37,12 +37,12 @@ public:
 
 
 
-	friend std::ostream& operator<< (std::ostream& out, Matrix a) {
+	friend std::ostream& operator<< (std::ostream& out, Matrix const& a) {
 		out << "Matrix:\n";
 		for (int i(0); i < a.str; i++) {
 			int row = i * a.column;
 			for (int j(0); j < a.column; j++)
-				out << a[row + j] << " ";
+				out << a.massive[row + j] << " ";
 			out << "\n";
 		}
 		out << "\n";
